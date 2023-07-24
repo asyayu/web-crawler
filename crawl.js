@@ -16,22 +16,6 @@ const normalizeURL = (url) => {
     return newURL;
 };
 
-const htmlString = `<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
-<body>
-    <a href="https://twitter.com/home">link</a>
-    <a href="https://twitter.com/home">link</a>
-    <a href="/home">link</a>
-    <a href="https://twitter.com/home">link</a>
-    <a href="https://twitter.com/home">link</a>
-</body>
-</html>`;
-
 const getURLsFromHTML = (htmlBody, baseURL) => {
     const urls = [];
     const dom = new JSDOM(htmlBody);
@@ -46,9 +30,28 @@ const getURLsFromHTML = (htmlBody, baseURL) => {
     return urls;
 };
 
-console.log(getURLsFromHTML(htmlString, 'https://twitter.com'));
+const crawlPage = async (baseURL) => {
+    try {
+        const res = await fetch(baseURL);
+        if (res.status > 399) {
+            console.log('ERROR RE STATUS');
+            return;
+        }
+        if (!res.headers.get('content-type').includes('text/html')) {
+            console.log('ERROR RE CONTENT TYPE');
+            return;
+        }
+        const resText = await res.text();
+        console.log(resText);
+    } catch (err) {
+        console.log(err);
+    }
+};
+
+// console.log(crawlPage('https://wagslane.dev'));
 
 module.exports = {
     normalizeURL,
     getURLsFromHTML,
+    crawlPage,
 };
